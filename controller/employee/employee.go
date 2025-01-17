@@ -12,7 +12,7 @@ type Tbl_employee struct {
 	Emp_id         int
 	Emp_firstname  string
 	Emp_lastname   string
-	Emp_deparment  string // แก้ไขชื่อฟิลด์ให้ตรงกับฐานข้อมูล
+	Emp_department string // แก้ไขชื่อฟิลด์ให้ตรงกับฐานข้อมูล
 	Emp_salary     float64
 }
 
@@ -21,7 +21,7 @@ type EmployeeBody struct {
 	Emp_id         int     `json:"emp_id" binding:"required"`
 	Emp_firstname  string  `json:"emp_firstname" binding:"required"`
 	Emp_lastname   string  `json:"emp_lastname" binding:"required"`
-	Emp_deparment  string  `json:"emp_deparment" binding:"required"` // แก้ไขชื่อฟิลด์ใน JSON
+	Emp_department string  `json:"emp_deparment" binding:"required"` // แก้ไขชื่อฟิลด์ใน JSON
 	Emp_salary     float64 `json:"emp_salary" binding:"required"`
 }
 
@@ -37,11 +37,23 @@ func GetEmployeeDB(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Employee Read Success", "employees": employees})
 }
 
-// GET By ID
+// GET By ID from Database
 func GetEmployeeByID(c *gin.Context) {
 	id := c.Param("id")
+
+	var employee Tbl_employee
+	if err := db.Db.Where("emp_id = ?", id).First(&employee).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"status":  "error",
+			"message": "Employee not found",
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"message": id,
+		"status":   "ok",
+		"message":  "Employee found",
+		"employee": employee,
 	})
 }
 
@@ -64,7 +76,7 @@ func PostEmployeeDB(c *gin.Context) {
 		Emp_id:         json.Emp_id,
 		Emp_firstname:  json.Emp_firstname,
 		Emp_lastname:   json.Emp_lastname,
-		Emp_deparment:  json.Emp_deparment, // แก้ไขตรงนี้
+		Emp_department: json.Emp_department, // แก้ไขตรงนี้
 		Emp_salary:     json.Emp_salary,
 	}
 
@@ -82,26 +94,26 @@ func PutEmployee(c *gin.Context) {
 	})
 }
 
-//PUT Employee to Database
-//PUT Employee to Database
+// PUT Employee to Database
+// PUT Employee to Database
 func PutEmployeeDB(c *gin.Context) {
-    var json EmployeeBody
+	var json EmployeeBody
 
-    var UpdateEmployees Tbl_employee
-    if err := c.ShouldBindJSON(&json); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	var UpdateEmployees Tbl_employee
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-    db.Db.First(&UpdateEmployees, json.Emp_id)
-    UpdateEmployees.Emp_firstname = json.Emp_firstname
-    UpdateEmployees.Emp_lastname = json.Emp_lastname
-    UpdateEmployees.Emp_deparment = json.Emp_deparment
-    UpdateEmployees.Emp_salary = json.Emp_salary
+	db.Db.First(&UpdateEmployees, json.Emp_id)
+	UpdateEmployees.Emp_firstname = json.Emp_firstname
+	UpdateEmployees.Emp_lastname = json.Emp_lastname
+	UpdateEmployees.Emp_department = json.Emp_department
+	UpdateEmployees.Emp_salary = json.Emp_salary
 
-    db.Db.Where("emp_id = ?", json.Emp_id).Save(&UpdateEmployees)
+	db.Db.Where("emp_id = ?", json.Emp_id).Save(&UpdateEmployees)
 
-    c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "User Updated"})
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "User Updated"})
 
 }
 
@@ -109,4 +121,11 @@ func DeleteEmployee(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Employee DELETE Method!",
 	})
+}
+
+func DeleteEmployeeDB(c *gin.Context) {
+	id := c.Param("id")
+	var employees []Tbl_employee
+	db.Db.Delete(&employees, "emp_id = ?", id)
+	c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Delete Profit Success"})
 }
