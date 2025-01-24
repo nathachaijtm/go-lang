@@ -21,7 +21,7 @@ type EmployeeBody struct {
 	Emp_id         int     `json:"emp_id" binding:"required"`
 	Emp_firstname  string  `json:"emp_firstname" binding:"required"`
 	Emp_lastname   string  `json:"emp_lastname" binding:"required"`
-	Emp_department string  `json:"emp_deparment" binding:"required"` // แก้ไขชื่อฟิลด์ใน JSON
+	Emp_department string  `json:"emp_department" binding:"required"` // แก้ไขชื่อฟิลด์ใน JSON
 	Emp_salary     float64 `json:"emp_salary" binding:"required"`
 }
 
@@ -37,10 +37,9 @@ func GetEmployeeDB(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Employee Read Success", "employees": employees})
 }
 
-// GET By ID from Database
+
 func GetEmployeeByID(c *gin.Context) {
 	id := c.Param("id")
-
 	var employee Tbl_employee
 	if err := db.Db.Where("emp_id = ?", id).First(&employee).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -49,7 +48,6 @@ func GetEmployeeByID(c *gin.Context) {
 		})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
 		"status":   "ok",
 		"message":  "Employee found",
