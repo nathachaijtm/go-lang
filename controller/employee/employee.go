@@ -12,7 +12,7 @@ type Tbl_employee struct {
 	Emp_id         int
 	Emp_firstname  string
 	Emp_lastname   string
-	Emp_department string // แก้ไขชื่อฟิลด์ให้ตรงกับฐานข้อมูล
+	Emp_department string 
 	Emp_salary     float64
 }
 
@@ -21,7 +21,7 @@ type EmployeeBody struct {
 	Emp_id         int     `json:"emp_id" binding:"required"`
 	Emp_firstname  string  `json:"emp_firstname" binding:"required"`
 	Emp_lastname   string  `json:"emp_lastname" binding:"required"`
-	Emp_department string  `json:"emp_department" binding:"required"` // แก้ไขชื่อฟิลด์ใน JSON
+	Emp_department string  `json:"emp_department" binding:"required"` 
 	Emp_salary     float64 `json:"emp_salary" binding:"required"`
 }
 
@@ -74,7 +74,7 @@ func PostEmployeeDB(c *gin.Context) {
 		Emp_id:         json.Emp_id,
 		Emp_firstname:  json.Emp_firstname,
 		Emp_lastname:   json.Emp_lastname,
-		Emp_department: json.Emp_department, // แก้ไขตรงนี้
+		Emp_department: json.Emp_department, 
 		Emp_salary:     json.Emp_salary,
 	}
 
@@ -92,7 +92,7 @@ func PutEmployee(c *gin.Context) {
 	})
 }
 
-// PUT Employee to Database
+
 // PUT Employee to Database
 func PutEmployeeDB(c *gin.Context) {
 	var json EmployeeBody

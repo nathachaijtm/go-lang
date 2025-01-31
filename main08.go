@@ -2,11 +2,12 @@ package main
 
 import (
 	AdminController "backend/api/controller/admin"
-	EmployeeController "backend/api/controller/employee"
 	AuthController "backend/api/controller/auth"
-	"backend/api/middleware" 
+	EmployeeController "backend/api/controller/employee"
 	"backend/api/db"
+	"backend/api/middleware"
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -22,26 +23,19 @@ func main() {
 
 	router := gin.Default()
 
-	authorized := router.Group("/api", middleware.JwtAuthen())  
-	authorized.GET("/employeedb", EmployeeController.GetEmployeeDB)
+	authorized := router.Group("/api", middleware.JwtAuthen())
 
-	//Employee API Method
-	router.GET("/employee", EmployeeController.GetEmployee)         //GET
-	router.GET("/employee/:id", EmployeeController.GetEmployeeByID) //GET BY ID
-	router.GET("/employeedb", AdminController.GetAdmin)
-	router.GET("/register", AdminController.GetAdmin)
+	authorized.GET("/employeedb/:id", EmployeeController.GetEmployeeByID) 
+	authorized.GET("/employeedb", EmployeeController.GetEmployeeDB) 
 
-	router.POST("/employee", EmployeeController.PostEmployee)     //POST
-	router.POST("/employeedb", EmployeeController.PostEmployeeDB) //POST TO DB
-	router.POST("/register", AdminController.PostAdmin)           //POST TO DB
+	authorized.POST("/employeedb", EmployeeController.PostEmployeeDB)
 
-	router.POST("/login", AuthController.Login) 				  //POST LOGIN
+	router.POST("/register", AdminController.PostAdmin) 
+	router.POST("/login", AuthController.Login)         
 
-	router.PUT("/employee", EmployeeController.PutEmployee)     //PUT
-	router.PUT("/employeedb", EmployeeController.PutEmployeeDB) //PUT TO DB
+	authorized.PUT("/employeedb", EmployeeController.PutEmployeeDB) 
 
-	router.DELETE("/employee", EmployeeController.DeleteEmployee)         //DELETE
-	router.DELETE("/employeedb/:id", EmployeeController.DeleteEmployeeDB) //DELETE DB
+	authorized.DELETE("/employeedb/:id", EmployeeController.DeleteEmployeeDB) 
 
 	//Customer API Method
 	router.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
